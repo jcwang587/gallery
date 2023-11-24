@@ -20,7 +20,7 @@ rm_bond(pdb_path, "LA", "LI", pdb_path)
 yaml_gen(pdb_path)
 
 # Load the molecule and apply the style
-clear_scene()
+clear_scene(lights=False)
 mol = mn.load.molecule_local(pdb_path, default_style='ball_and_stick')
 yaml_path = pdb_path[:-4] + '_style.yaml'
 apply_yaml(mol, yaml_path)
