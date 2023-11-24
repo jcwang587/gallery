@@ -1,32 +1,29 @@
 import os
 import bpy
-import time
 import molecularnodes as mn
 from xdatbus.fbld01_pos2bpdb import pos2bpdb
 from xdatbus.fbld02_rm_bond import rm_bond
 from xdatbus.utils_bpy import clear_scene, apply_modifiers_to_mesh, apply_yaml, yaml_gen
 
 current_dir = os.getcwd()
-poscar_path = os.path.join(current_dir, '../tests/data/poscar/llto.poscar')
-pdb_path = os.path.join(current_dir, 'llto.pdb')
+poscar_path = os.path.join(current_dir, 'LLTO-U2-N0-OV1-07-013-POSCAR.poscar')
+pdb_path = os.path.join(current_dir, 'LLTO-U2-N0-OV1-07-013-POSCAR.pdb')
 pos2bpdb(poscar_path, pdb_path)
 
-rm_bond('llto.pdb', "LI", "TI", "llto_rm_bond.pdb")
-rm_bond("llto_rm_bond.pdb", "LA", "TI", "llto_rm_bond.pdb")
-rm_bond("llto_rm_bond.pdb", "LA", "O", "llto_rm_bond.pdb")
-rm_bond("llto_rm_bond.pdb", "LA", "LA", "llto_rm_bond.pdb")
-rm_bond("llto_rm_bond.pdb", "LA", "LI", "llto_rm_bond.pdb")
+rm_bond(pdb_path, "LI", "TI", pdb_path)
+rm_bond(pdb_path, "LA", "TI", pdb_path)
+rm_bond(pdb_path, "LA", "O", pdb_path)
+rm_bond(pdb_path, "LA", "LA", pdb_path)
+rm_bond(pdb_path, "LA", "LI", pdb_path)
 
 # Generate YAML file
-# yaml_gen('llto_rm_bond.pdb')
-
-# Start timer
-start_time = time.time()
+yaml_gen(pdb_path)
 
 # Load the molecule and apply the style
 clear_scene()
-mol = mn.load.molecule_local("llto_rm_bond.pdb", default_style='ball_and_stick')
-apply_yaml(mol, 'llto_rm_bond_style.yaml')
+mol = mn.load.molecule_local(pdb_path, default_style='ball_and_stick')
+yaml_path = pdb_path[:-4] + '_style.yaml'
+apply_yaml(mol, yaml_path)
 
 # Export the scene to a blender file
 output_blend_path = os.path.join(current_dir, 'output.blend')
@@ -40,10 +37,4 @@ output_fbx_path = os.path.join(current_dir, 'output.fbx')
 bpy.ops.export_scene.fbx(filepath=output_fbx_path,
                          use_selection=True,
                          path_mode='COPY')
-
-# End timer
-end_time = time.time()
-
-# Print the time taken
-print("Time taken: {} seconds".format(end_time - start_time))
 
